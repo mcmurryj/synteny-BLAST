@@ -104,7 +104,8 @@ print("Done extracting context information!!!")
 
 ###ALSO WRITE NEW BLAST DB###
 make2ndBLASTdbcmd = "makeblastdb -in " + secondary_BLAST_seq_file + " -input_type fasta -dbtype prot"
-subprocess.call(make2ndBLASTdbcmd)
+print(make2ndBLASTdbcmd)
+subprocess.call(make2ndBLASTdbcmd, shell = TRUE)
 print("Done making secondary BLAST DB!!!")
 
 ###PHASE ID:  run 2ndary blast
