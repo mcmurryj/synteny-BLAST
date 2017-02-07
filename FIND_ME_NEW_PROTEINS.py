@@ -28,7 +28,7 @@ handshake_eval	   = 1e-20			#cutoff evalue for the secondary blast searches
 blastdb            = args.database					#use nr as the db for initial blast search by default
 print("Done setting inital variables.  Input sequence from: " + query_fa + "; Output goes in" + output_dir)
 
-###MAKE DATA STRUCTURES###
+###MAKE DATA STRUCTURES###sillycomment
 data_box = {}	#databox = {clusterID : {clustermemberID : {homologueID : bitscore, .....}, ......}, ......}
 
 ###MAKE FOLDER FOR OUTPUT###
@@ -110,7 +110,7 @@ print("Done making secondary BLAST DB!!!")
 ###PHASE ID:  run 2ndary blast
 outputfile2ndBLAST = os.path.abspath(secondary_BLAST_seq_dir + "/" + "2ndBLAST_output.XML")
 run2ndBLASTdbcmd = NcbiblastpCommandline(
-query = secondary_BLAST_seq_file, 
+query = secondary_BLAST_seq_file,
 db = secondary_BLAST_seq_file,
 evalue = handshake_eval,
 outfmt = 5,
