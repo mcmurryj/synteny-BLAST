@@ -75,9 +75,9 @@ delim2 = "&"
 
 ###make output folder
 secondary_BLAST_seq_dir = output_dir + "/" + "BLAST2_data"
-if not os.path.exists(os.path.abspath(secondary_BLAST_seq_dir)):
-	os.makedirs(os.path.abspath(secondary_BLAST_seq_dir))
+os.makedirs(os.path.abspath(secondary_BLAST_seq_dir))
 secondary_BLAST_seq_file = os.path.abspath(secondary_BLAST_seq_dir + "/" + "secondary_BLAST_seqs.faa")
+print("Made dir " + secondary_BLAST_seq_dir + " to hold file " + secondary_BLAST_seq_file)
 
 ###do loops
 print("Prepare to do loops........")
