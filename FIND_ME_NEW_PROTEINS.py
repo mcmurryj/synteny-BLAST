@@ -67,7 +67,7 @@ for ali in blastrecord.alignments:
 print("Read in scores of best hits to query sequence!")
 
 ###PHASE IC:  GET THE GENOME CHUNKS (or at least the proteins) AND STORE IN FASTA FILES###
-###Format of input custom FAA DB:  >[gb_file_name] [Organism name] [Protein accession] \n protein sequence 
+###Format of input custom FAA DB:  >[gb_file_name] [Organism name] [Protein accession] \n protein sequence
 ###make some data structures
 protein_window = deque(maxlen= feature_radius*2 +1)
 temp_ID_list = list(data_box[query_ID][query_ID].keys())
@@ -79,7 +79,7 @@ if not os.path.exists(os.path.abspath(secondary_BLAST_seq_dir)):
 	os.makedirs(os.path.abspath(secondary_BLAST_seq_dir))
 secondary_BLAST_seq_file = os.path.abspath(secondary_BLAST_seq_dir + "/" + "secondary_BLAST_seqs.faa")
 
-###do loops 
+###do loops
 print("Prepare to do loops........")
 protein_record = SeqIO.parse(blastdb, "fasta")
 for p in protein_record:
@@ -101,20 +101,21 @@ for p in protein_record:
 				ungodly.description = pID + delim2 + phit.description + delim2 + "WARNING ID format is cluster_ID & cluster_member_ID & warning"
 				SeqIO.write(ungodly, secondaryBLASThandle, 'fasta')
 print("Done extracting context information!!!")
-	
+
 ###ALSO WRITE NEW BLAST DB###
 make2ndBLASTdbcmd = "makeblastdb -in " + secondary_BLAST_seq_file + " -input_type fasta -dbtype prot"
 subprocess.call(make2ndBLASTdbcmd)
 print("Done making secondary BLAST DB!!!")
-		
+
 ###PHASE ID:  run 2ndary blast
 outputfile2ndBLAST = os.path.abspath(secondary_BLAST_seq_dir + "/" + "2ndBLAST_output.XML")
 run2ndBLASTdbcmd = NcbiblastpCommandline(
 query = secondary_BLAST_seq_file, 
 db = secondary_BLAST_seq_file,
-evalue = query_eval,
+evalue = handshake_eval,
 outfmt = 5,
 out = outputfile2ndBLAST)
+print("RUnning command: " + str(run2ndBLASTdbcmd))
 run2ndBLASTdbcmd()
 print("Done running secondary BLAST search!!!")
 
@@ -123,19 +124,19 @@ print("Done running secondary BLAST search!!!")
 cluster_ID, cluster_member_ID, homologue_ID = "", "", ""
 result_handle = open(outputfile2ndBLAST, "r")
 second_BLAST_rec = NCBIXML.parse(result_handle)
-for blastrecord in second_BLAST_rec:	
+for blastrecord in second_BLAST_rec:
 	cluster_ID        = blastrecord.query.split(delim2)[0]
 	cluster_member_ID = blastrecord.query.split(delim2)[1]
 	if not cluster_ID in data_box.keys():
 		data_box[cluster_ID]  = {}
 	for ali in blastrecord.alignments:
-		homologue_ID        = ali.hit_def.split(delim2)[1]					
+		homologue_ID        = ali.hit_def.split(delim2)[1]
 		homologue_parent_ID = ali.hit_def.split(delim2)[0]
-		hitscore            = ali.hsps[0].score								
+		hitscore            = ali.hsps[0].score
 		if not cluster_member_ID in data_box[cluster_ID].keys():
 			data_box[cluster_ID][cluster_member_ID] = {}
 		data_box[cluster_ID][cluster_member_ID][homologue_ID] = {"bitscore" : hitscore,
-		                                                         "homologue_parent" : homologue_parent_ID}	
+		                                                         "homologue_parent" : homologue_parent_ID}
 print("Done writing data to dictionary!!!")
 
 ###PHASE IIA:  PRINT TABLE WITH DATA
@@ -165,15 +166,15 @@ for cluster_ID in data_box.keys():
 				values = data0[0:2] + data1[2:] + ["NA"]*5 + score
 				tabout_handle.write('\t'.join(map(str, values))+"\n")
 
-###PHASE IIB: MAKE NETWORK AND STORE IN XGMML		
-import networkx as nx		
+###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
+import networkx as nx
 cluNet = nx.Graph()
 protNet = nx.Graph()
 cluster_ID, cluster_member_ID, homologue_ID, homologue_parent_ID = "", "", "", ""
 
 for cluster_ID in data_box.keys():
 	cluNet.add_node(cluster_ID)
-	
+
 for cluster_ID in data_box.keys():
 	for cluster_member_ID in data_box[cluster_ID].keys():
 		for homologue_ID in data_box[cluster_ID][cluster_member_ID].keys():
@@ -195,7 +196,7 @@ for n in protNet.nodes():
 		protNet.remove_node(n)
 	if protNet.has_edge(n, n):
 		protNet.remove_edge(n,n)
-		
+
 for n in cluNet.nodes():
 	if cluNet.has_edge(n, n):
 		cluNet.remove_edge(n,n)
@@ -206,7 +207,7 @@ nx.write_gml(cluNet, os.path.abspath(g_output_dir + "/"+ "graph_o_clusters.gml")
 nx.write_gml(protNet, os.path.abspath(g_output_dir + "/"+ "graph_o_proteins.gml"))
 
 		#black magic-returns list of tuples sorted by the value of the second element of the tuple
-		#in this case that element is the bitscore of the hit.  
+		#in this case that element is the bitscore of the hit.
 		#Print the SECOND best one.  Best one is self.
 		#entry_list = sorted(data_box[cluster_ID][cluster_member_ID].items(), key=operator.itemgetter(1))
 		#if len(entry_list) == 1:
