@@ -66,7 +66,7 @@ for ali in blastrecord.alignments:
 	data_box[cluster_ID][cluster_member_ID][homologue_ID] = hitscore			#strictly speaking program will just write over this later.
 print("Read in scores of best hits to query sequence!")
 
-###PHASE IC:  GET THE GENOME CHUNKS (or at least the proteins) AND STORE IN FASTA FILES###
+###PHASE IC:  GET THE GENOME CHUNKS  (or at least the proteins) AND STORE IN FASTA FILES###
 ###Format of input custom FAA DB:  >[gb_file_name] [Organism name] [Protein accession] \n protein sequence
 ###make some data structures
 protein_window = deque(maxlen= feature_radius*2 +1)
@@ -94,7 +94,7 @@ for p in protein_record:
 		for phit in protein_window:
 			species, contig, protID, annot, startstop = phit.description.split("|")
 			if contig != the_right_contig:
-				protein_window.remove(phit)
+				pass	#originally did remove but deque mutation error
 			else:
 				secondaryBLASThandle = open(secondary_BLAST_seq_file, "a")
 				ungodly = phit
