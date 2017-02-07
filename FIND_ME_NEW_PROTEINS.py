@@ -21,7 +21,7 @@ parser.add_argument("output", help = "the name of the directory where you wish t
 args = parser.parse_args()
 query_fa           = args.input
 output_dir         = args.output
-query_eval         = 1E-20				#cutoff evalue for the initial BLAST search
+query_eval         = 1E-30				#cutoff evalue for the initial BLAST search
 feature_radius     = 5			#how many proteins on either side to take for subsequent analysis?
 max_no_seqs        = 200				#maximum number of hits to return in the initial search
 handshake_eval	   = 1e-20			#cutoff evalue for the secondary blast searches
@@ -105,7 +105,7 @@ print("Done extracting context information!!!")
 ###ALSO WRITE NEW BLAST DB###
 make2ndBLASTdbcmd = "makeblastdb -in " + secondary_BLAST_seq_file + " -input_type fasta -dbtype prot"
 print(make2ndBLASTdbcmd)
-subprocess.call(make2ndBLASTdbcmd, shell = TRUE)
+subprocess.call(make2ndBLASTdbcmd, shell = True)
 print("Done making secondary BLAST DB!!!")
 
 ###PHASE ID:  run 2ndary blast
