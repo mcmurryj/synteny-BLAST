@@ -141,30 +141,37 @@ for blastrecord in second_BLAST_rec:
 print("Done writing data to dictionary!!!")
 
 ###PHASE IIA:  PRINT TABLE WITH DATA
-delim = "|"
-header = ["organism", "contig", "cluster member ID", "cluster member annotation", "cluster member startstop",
+delim              = "|"
+header             = ["cluster member ID", "cluster member annotation", "cluster member startstop",
 "homologue organism", "homologue contig", "homologue proteinID", "homologue annot", "homologue startstop", "BLAST bitscore"]
-cluster_ID, cluster_member_ID, homologue_ID = "", "", ""
+cluster_ID         = ""
+cluster_member_ID  = ""
+homologue_ID       = ""
 
-tab_output_dir = os.path.abspath(output_dir + "/"+ "table_output")
+#Make the directory
+tab_output_dir = os.path.abspath(output_dir + "/table_output")
 os.makedirs(tab_output_dir)
 
+#iterate thru all the info and print stuff out
 for cluster_ID in data_box.keys():
-	data0 = cluster_ID.split(delim)
-	WP_no = data0[2]
+	#get data chunks from the titles of the fasta sequences
+	data0         = cluster_ID.split(delim)
+	WP_no         = data0[2]				#third element is the WP_number
+	org_cont      = data0[0:2]				#first 2 elements are species and contig
 	tabout_handle = open(os.path.abspath(tab_output_dir + "/"+ WP_no + ".tsv"), "a")
-	tabout_handle.write('\t'.join(map(str,header))+"\n")
+	tabout_handle.write('\t'.join(map(str, org_cont)) + "\n")		#print species and contig at the top; these are invariant
+	tabout_handle.write('\t'.join(map(str, header  )) + "\n")		#print the header info
 	for cluster_member_ID in data_box[cluster_ID].keys():
 		data1 = cluster_member_ID.split(delim)
 		for homologue_ID in data_box[cluster_ID][cluster_member_ID].keys():
-			if cluster_member_ID != homologue_ID:
+			if cluster_member_ID != homologue_ID:       #if it is not self-identity
 				data2 = homologue_ID.split(delim)
 				score = [data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"]]
-				values = data0[0:2] + data1[2:] + data2 + score
+				values = data1[2:] + data2 + score
 				tabout_handle.write('\t'.join(map(str, values))+"\n")
-			else :
+			else :                                       #less interesting-where a protein is related to itself.
 				score = [data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"]]
-				values = data0[0:2] + data1[2:] + ["NA"]*5 + score
+				values = data1[2:] + ["NA"]*5 + score
 				tabout_handle.write('\t'.join(map(str, values))+"\n")
 
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
