@@ -18,7 +18,7 @@ for gbfile in gb_list:
 				#organism = rec.annotations['source']	#other note-"protein_id" in feat.qualifiers is faster vs. feat.qualifiers.keys() cause that makes a new list.
 				print(">"+ rec.annotations['source'].replace(" ", "_")   #replacing whitespace helps to parse for hmmscan
 				 + delim + rec.id + delim + feat.qualifiers['protein_id'][0]
-				 + delim + feat.qualifiers['product'][0]
+				 + delim + feat.qualifiers['product'][0].replace(" ", "_")
 				 + delim + str(feat.location.start)
 				 + "-" + str(feat.location.end))#(">"+gbfile+delim+ pid+delim+locstart+"-" +locend)
 				print((feat.extract(rec.seq).translate()))                        #use [:-1]to get rid of the * for stop codon, don't know if blastdb will like that

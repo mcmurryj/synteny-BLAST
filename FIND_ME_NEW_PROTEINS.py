@@ -24,7 +24,7 @@ output_dir         = args.output
 query_eval         = 1E-30				#cutoff evalue for the initial BLAST search
 feature_radius     = 5			#how many proteins on either side to take for subsequent analysis?
 max_no_seqs        = 200				#maximum number of hits to return in the initial search
-handshake_eval	   = 1e-20			#cutoff evalue for the secondary blast searches
+handshake_eval	   = 1e-20			#cutoff evalue for the _blast_seq blast searches
 blastdb            = args.database					#use nr as the db for initial blast search by default
 print("Done setting inital variables.  Input sequence from: " + query_fa + "; Output goes in " + output_dir)
 
@@ -99,7 +99,8 @@ for p in protein_record:
 				secondaryBLASThandle = open(secondary_BLAST_seq_file, "a")
 				ungodly = phit
 				ungodly.description = pID + delim2 + phit.description + delim2 + "WARNING ID format is cluster_ID & cluster_member_ID & warning"
-				SeqIO.write(ungodly, secondaryBLASThandle, 'fasta')
+				secondaryBLASThandle.write(">" + ungodly.description + "\n")
+				secondaryBLASThandle.write(str(ungodly.seq) + "\n")
 print("Done extracting context information!!!")
 
 ###ALSO WRITE NEW BLAST DB###
