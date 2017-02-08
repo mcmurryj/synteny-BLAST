@@ -26,7 +26,7 @@ feature_radius     = 5			#how many proteins on either side to take for subsequen
 max_no_seqs        = 200				#maximum number of hits to return in the initial search
 handshake_eval	   = 1e-20			#cutoff evalue for the secondary blast searches
 blastdb            = args.database					#use nr as the db for initial blast search by default
-print("Done setting inital variables.  Input sequence from: " + query_fa + "; Output goes in" + output_dir)
+print("Done setting inital variables.  Input sequence from: " + query_fa + "; Output goes in " + output_dir)
 
 ###MAKE DATA STRUCTURES###sillycomment
 data_box = {}	#databox = {clusterID : {clustermemberID : {homologueID : bitscore, .....}, ......}, ......}

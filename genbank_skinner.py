@@ -16,7 +16,7 @@ for gbfile in gb_list:
 		for feat in rec.features:						###note: feature parsing works for refseq records from ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/bacteria/
 			if 'protein_id' in feat.qualifiers:			###Not funtional with EG JGI genomes, yet.
 				#organism = rec.annotations['source']	#other note-"protein_id" in feat.qualifiers is faster vs. feat.qualifiers.keys() cause that makes a new list.
-				print(">"+ rec.annotations['source']
+				print(">"+ rec.annotations['source'].replace(" ", "_")   #replacing whitespace helps to parse for hmmscan
 				 + delim + rec.id + delim + feat.qualifiers['protein_id'][0]
 				 + delim + feat.qualifiers['product'][0]
 				 + delim + str(feat.location.start)
