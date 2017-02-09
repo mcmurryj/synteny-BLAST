@@ -140,11 +140,21 @@ for blastrecord in second_BLAST_rec:
 		data_box[cluster_ID][cluster_member_ID][homologue_ID] = {"bitscore" : hitscore,
 		                                                         "homologue_parent" : homologue_parent_ID}
 print("Done writing data to dictionary!!!")
+###PHASE IIA1:  Run HMMscan on the BLAST db and parse results
+print("Running HMMscan on the secondary blast DB.....")
+from hmmscan_command import run_hmmscan
+run_hmmscan(fasta = secondary_BLAST_seq_file)
+print("Parsing hmmscan results.......")
+from hmmscan_parse import hmmscan_parse
+pfam_dict                = hmmscan_parse(os.path.abspath("./hmmscan_data/hmmscan_out.tab"))   #hardcoded path is aesthetically unappealing
+cluster_member_pfam_dict = pfam_dict["cluster member ID pfam dict"]
+print("Done recording dict of pfam domains!!!")
 
 ###PHASE IIA:  PRINT TABLE WITH DATA
 delim              = "|"
 header             = ["cluster member ID", "cluster member annotation", "cluster member startstop",
-"homologue organism", "homologue contig", "homologue proteinID", "homologue annot", "homologue startstop", "BLAST bitscore"]
+                      "homologue organism", "homologue contig", "homologue proteinID", "homologue annot",
+					  "homologue startstop", "BLAST bitscore", "cluster member pfam domains"]
 cluster_ID         = ""
 cluster_member_ID  = ""
 homologue_ID       = ""
@@ -166,13 +176,14 @@ for cluster_ID in data_box.keys():
 		data1 = cluster_member_ID.split(delim)
 		for homologue_ID in data_box[cluster_ID][cluster_member_ID].keys():
 			if cluster_member_ID != homologue_ID:       #if it is not self-identity
-				data2 = homologue_ID.split(delim)
-				score = [data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"]]
-				values = data1[2:] + data2 + score
+				data2     = homologue_ID.split(delim)
+				score     = [data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"]]
+				pfam_hits = cluster_member_pfam_dict[cluster_member_ID]
+				values = data1[2:] + data2 + score + pfam_hits				#will make ragged table
 				tabout_handle.write('\t'.join(map(str, values))+"\n")
 			else :                                       #less interesting-where a protein is related to itself.
 				score = [data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"]]
-				values = data1[2:] + ["NA"]*5 + score
+				values = data1[2:] + ["NA"]*5 + score + pfam_hits
 				tabout_handle.write('\t'.join(map(str, values))+"\n")
 
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML

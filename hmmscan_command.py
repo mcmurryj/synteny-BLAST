@@ -3,10 +3,10 @@
     #will have to call iteratively on each sequence or reformat titles.
     #usage from hmmscan_command import run_hmmscan
 import os
-def run_hmmscan(fasta, output_dir, pfam_db = os.path.abspath("/media/mchanglab/shared-disk/shared-drive/Jon/pfam/Pfam-A.hmm")):
+def run_hmmscan(fasta, pfam_db = os.path.abspath("/media/mchanglab/shared-disk/shared-drive/Jon/pfam/Pfam-A.hmm")):
     """Run the hmmscan program on the specified fasta file, and put the results in the specified output location"""
     #Set directory names and make dirs:
-    hmmscan_dir = os.path.abspath(output_dir + "/hmmscan_data")
+    hmmscan_dir = os.path.abspath("./hmmscan_data")
     os.makedirs(hmmscan_dir)
     hmmscan_file = os.path.abspath(hmmscan_dir + "/hmmscan_out.tab")
     print("Made dir " + hmmscan_dir + " to hold file " + hmmscan_file)
