@@ -1,8 +1,9 @@
 #!/usr/bin/python
     #problem-to-deal-with: hmmscan parses spaces in faa sequence titles.
     #will have to call iteratively on each sequence or reformat titles.
-def run_hmmscan(fasta, output_dir,
-                pfam_db = os.path.abspath("/media/mchanglab/shared-disk/shared-drive/Jon/pfam/Pfam-A.hmm"))
+    #usage from hmmscan_command import run_hmmscan
+import os
+def run_hmmscan(fasta, output_dir, pfam_db = os.path.abspath("/media/mchanglab/shared-disk/shared-drive/Jon/pfam/Pfam-A.hmm")):
     """Run the hmmscan program on the specified fasta file, and put the results in the specified output location"""
     #Set directory names and make dirs:
     hmmscan_dir = os.path.abspath(output_dir + "/hmmscan_data")
@@ -23,5 +24,5 @@ def run_hmmscan(fasta, output_dir,
     )
 
     print("Now running command:  " + hmmscan_cmd)
-    subprocess.call(make2ndBLASTdbcmd, shell = True)
+    subprocess.call(hmmscan_cmd, shell = True)
     print("Done running hmmscan!!!")
