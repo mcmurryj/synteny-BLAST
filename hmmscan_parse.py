@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#comment comment comment commentMASTER
 def hmmscan_parse (hmmscan_output):
     """This function takes as input the path to an hmmscan output file.
        It returns a dict linking cluster_member_ID to a list of pfam domains
