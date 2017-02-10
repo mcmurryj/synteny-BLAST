@@ -3,105 +3,47 @@
 from sys import argv
 import subprocess
 from Bio.Blast.Applications import NcbiblastpCommandline
-from Bio.Blast import NCBIXML
-from Bio import SeqIO
 import os
 import shutil
 import glob
-from collections import deque
 import operator
+import get_parms()
 
-###PHASE 0:  PRINT OUT A HELPFUL HELP STATEMENT AND GET INPUTS##
 ###INPUT USER INPUT STUFF####https://docs.python.org/2/howto/argparse.html#id1
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument("input", help = "your input protein sequence in fasta format")
-parser.add_argument("database", help = "your input BLAST database")
-parser.add_argument("output", help = "the name of the directory where you wish to store output")
-args = parser.parse_args()
-query_fa           = args.input
-output_dir         = args.output
-query_eval         = 1E-30				#cutoff evalue for the initial BLAST search
-feature_radius     = 5			#how many proteins on either side to take for subsequent analysis?
-max_no_seqs        = 200				#maximum number of hits to return in the initial search
-handshake_eval	   = 1e-20			#cutoff evalue for the _blast_seq blast searches
-blastdb            = args.database					#use nr as the db for initial blast search by default
-print("Done setting inital variables.  Input sequence from: " + query_fa + "; Output goes in " + output_dir)
+var_dict           = get_parms
+query_fa           = var_dict["query_fa"]
+output_dir         = os.path.abspath(var_dict["output_dir"])
+query_eval         = var_dict["query_eval"]				#cutoff evalue for the initial BLAST search
+feature_radius     = var_dict["feature_radius"]			#how many proteins on either side to take for subsequent analysis?
+handshake_eval	   = var_dict["handshake_eval"]			#cutoff evalue for the _blast_seq blast searches
+blastdb            = var_dict["blastdb"]					#use nr as the db for initial blast search by default
 
-###MAKE DATA STRUCTURES###sillycomment
-data_box = {}	#databox = {clusterID : {clustermemberID : {homologueID : bitscore, .....}, ......}, ......}
-
-###MAKE FOLDER FOR OUTPUT###
-if os.path.exists(output_dir):
-	shutil.rmtree(output_dir)
-os.makedirs(output_dir)
-
-###MAKE SUBFOLDER FOR BLAST OUTPUT####
-blastoutputdir = output_dir + "/"+ "initial_BLAST_data"
-os.makedirs(os.path.abspath(blastoutputdir))
-blastoutputfile = os.path.abspath(blastoutputdir + "/" + "initial_blast_output.XML")
+###MAKE FOLDERS##
+from make_folders import make_folders
+make_folders(output_dir)
+blastoutputdir    = path.abspath(output_dir + "/initial_BLAST_data")
+make_folders(blastoutputdir)
+blastoutputfile = path.abspath(blastoutputdir + "/initial_blast_output.XML")
 
 ###PHASE IA: BLAST QUERY SEQUENCE AGAINST DATABASE###
-cline = NcbiblastpCommandline(query = query_fa, db = blastdb, evalue = query_eval, outfmt = 5, out = blastoutputfile)
-cline()				#to actually run the thing
+cline = NcbiblastpCommandline(query  = query_fa,
+                              db     = blastdb,
+							  evalue = query_eval,
+							  outfmt = 5,
+							  out    = blastoutputfile)
+cline()														#to actually run the thing
 print("Completed initial BLAST search")
 
-###PHASE I:PARSE BLAST RESULTS; STORE THE GENOMIC INFORMATION AND BITSCORES OF HITS###
-result_handle = open(blastoutputfile, "r")
-initial_blast_record = NCBIXML.parse(result_handle)
-blastrecord = next(initial_blast_record)			  					#are they ordered best hit first?  THis is needed.  lAso that the query is in refseq NR.
-ali               = blastrecord.alignments[0]											#best hit first
-query_ID          = ali.hit_def									#get the ID of the presumptive query  Will need work on ID retrieval.
-cluster_ID        = query_ID
-cluster_member_ID = query_ID
-homologue_ID      = query_ID
-result_handle.close()
-print("Parsed initial BLAST results!")
-
-data_box[cluster_ID] = {cluster_member_ID : {}}
-####THis chunk has some issues.
-for ali in blastrecord.alignments:
-	homologue_ID = ali.hit_def	 													# I forget what alignments vs. hsps are.  XXX.title or .hit_def is more info, .accession is like the WP ####
-	hitscore = ali.hsps[0].score													#I think this is OK?
-	data_box[cluster_ID][cluster_member_ID][homologue_ID] = hitscore			#strictly speaking program will just write over this later.
-print("Read in scores of best hits to query sequence!")
-
-###PHASE IC:  GET THE GENOME CHUNKS  (or at least the proteins) AND STORE IN FASTA FILES###
-###Format of input custom FAA DB:  >[gb_file_name] [Organism name] [Protein accession] \n protein sequence
-###make some data structures
-protein_window = deque(maxlen= feature_radius*2 +1)
-temp_ID_list = list(data_box[query_ID][query_ID].keys())
-delim2 = "&"
-
-###make output folder
-secondary_BLAST_seq_dir = output_dir + "/" + "BLAST2_data"
-os.makedirs(os.path.abspath(secondary_BLAST_seq_dir))
-secondary_BLAST_seq_file = os.path.abspath(secondary_BLAST_seq_dir + "/" + "secondary_BLAST_seqs.faa")
+###make output folder for BLAST2
+secondary_BLAST_seq_dir = output_dir + "/BLAST2_data"
+make_folders(secondary_BLAST_seq_dir)
+secondary_BLAST_seq_file = os.path.abspath(secondary_BLAST_seq_dir + "/secondary_BLAST_seqs.faa")
 print("Made dir " + secondary_BLAST_seq_dir + " to hold file " + secondary_BLAST_seq_file)
 
-###do loops
-print("Prepare to do loops........")
-protein_record = SeqIO.parse(blastdb, "fasta")
-for p in protein_record:
-	protein_window.append(p)								###again I will need to  harmonize the ID system
-	if len(protein_window) < (feature_radius + 1):
-		pID = protein_window[-1]
-	else:
-		pID = protein_window[feature_radius].description
-	if pID in temp_ID_list:								#won't find clusters in the last radius unit of the faa file.
-		the_right_contig = pID.split("|")[1]
-		temp_ID_list.remove(pID)
-		for phit in protein_window:
-			species, contig, protID, annot, startstop = phit.description.split("|")
-			if contig != the_right_contig:
-				pass	#originally did remove but deque mutation error
-			else:
-				secondaryBLASThandle = open(secondary_BLAST_seq_file, "a")
-				ungodly = phit
-				ungodly.description = pID + delim2 + phit.description + delim2 + "WARNING ID format is cluster_ID & cluster_member_ID & warning"
-				secondaryBLASThandle.write(">" + ungodly.description + "\n")
-				secondaryBLASThandle.write(str(ungodly.seq) + "\n")
-print("Done extracting context information!!!")
+###RETRIEVE
+import loop_doer
+id_list  = loop_doer.getIDs(blastoutputfile)
+loop_doer.do_loops(id_list, blastdb, feature_radius, secondary_BLAST_seq_file)
 
 ###ALSO WRITE NEW BLAST DB###
 make2ndBLASTdbcmd = "makeblastdb -in " + secondary_BLAST_seq_file + " -input_type fasta -dbtype prot"
@@ -110,14 +52,14 @@ subprocess.call(make2ndBLASTdbcmd, shell = True)
 print("Done making secondary BLAST DB!!!")
 
 ###PHASE ID:  run 2ndary blast
-outputfile2ndBLAST = os.path.abspath(secondary_BLAST_seq_dir + "/" + "2ndBLAST_output.XML")
+outputfile2ndBLAST = os.path.abspath(secondary_BLAST_seq_dir + "/2ndBLAST_output.XML")
 run2ndBLASTdbcmd = NcbiblastpCommandline(
-query = secondary_BLAST_seq_file,
-db = secondary_BLAST_seq_file,
-evalue = handshake_eval,
-outfmt = 5,
-out = outputfile2ndBLAST)
-print("RUnning command: " + str(run2ndBLASTdbcmd))
+query   = secondary_BLAST_seq_file,
+db      = secondary_BLAST_seq_file,
+evalue  = handshake_eval,
+outfmt  = 5,
+out     = outputfile2ndBLAST)
+print("Running command: " + str(run2ndBLASTdbcmd))
 run2ndBLASTdbcmd()
 print("Done running secondary BLAST search!!!")
 
