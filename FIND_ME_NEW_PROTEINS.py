@@ -1,11 +1,11 @@
-#!/usr/bin/python
 ###PHASE -1 : IMPORT LIBRARIES###
+#!/usr/bin/python
 import subprocess
 from Bio.Blast.Applications import NcbiblastpCommandline
 import os
-import get_parms
 
 ###INPUT USER INPUT STUFF####https://docs.python.org/2/howto/argparse.html#id1
+import get_parms
 var_dict           = get_parms.get_parms()
 query_fa           = var_dict["query_fa"]
 output_dir         = os.path.abspath(var_dict["output_dir"])
@@ -71,59 +71,7 @@ import print_tables
 print_tables.print_tables(data_box, tab_output_dir)
 
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
-import networkx as nx
-cluNet = nx.Graph()
-protNet = nx.Graph()
-cluster_ID, cluster_member_ID, homologue_ID, homologue_parent_ID = "", "", "", ""
-
-for cluster_ID in data_box.keys():
-	cluNet.add_node(cluster_ID)
-
-for cluster_ID in data_box.keys():
-	for cluster_member_ID in data_box[cluster_ID].keys():
-		for homologue_ID in data_box[cluster_ID][cluster_member_ID].keys():
-			score               = data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"]
-			homologue_parent_ID = data_box[cluster_ID][cluster_member_ID][homologue_ID]["homologue_parent"]
-			IDtup               = tuple(sorted([cluster_ID, homologue_parent_ID]))
-			IDtup2              = tuple(sorted([cluster_member_ID, homologue_ID]))
-			protNet.add_node(IDtup2[0])
-			protNet.add_node(IDtup2[1])
-			protNet.add_edge(IDtup2[0], IDtup2[1], weight = score)
-			if IDtup in cluNet.edges():
-				cluNet[IDtup[0]][IDtup[1]]["weight"] += score
-			else:
-				cluNet.add_edge(IDtup[0], IDtup[1], weight = score)
-
-#tidy up the network by removing self-connections and deleting loner nodes.
-for n in protNet.nodes():
-	if len(protNet[n].keys()) <= 1:
-		protNet.remove_node(n)
-	if protNet.has_edge(n, n):
-		protNet.remove_edge(n,n)
-
-for n in cluNet.nodes():
-	if cluNet.has_edge(n, n):
-		cluNet.remove_edge(n,n)
-
-g_output_dir = os.path.abspath(output_dir + "/"+ "graph_output")
+g_output_dir = os.path.abspath(output_dir + "/graph_output")
 os.makedirs(g_output_dir)
-nx.write_gml(cluNet, os.path.abspath(g_output_dir + "/"+ "graph_o_clusters.gml"))
-nx.write_gml(protNet, os.path.abspath(g_output_dir + "/"+ "graph_o_proteins.gml"))
-
-		#black magic-returns list of tuples sorted by the value of the second element of the tuple
-		#in this case that element is the bitscore of the hit.
-		#Print the SECOND best one.  Best one is self.
-		#entry_list = sorted(data_box[cluster_ID][cluster_member_ID].items(), key=operator.itemgetter(1))
-		#if len(entry_list) == 1:
-		#	data2 = ["NO HITS BESIDES SELF"]
-		#	score = ["NA"]
-		#else:
-		#	data2 =entry_list[1][0].split(delim)
-		#	score = [str(entry_list[1][1])]
-		#print(','.join(map(str, header)))
-		#print(','.join(map(str, data0 + data1 + data2 + score)))
-###PHASE IIB: MAKE EDGE-WEIGHTED NETWORK
-###PHASE IIC###
-###ANNOTATE EACH PROTEIN WITH PFAM/COG ASSIGNMENTS###
-###FOR EACH INITIAL HIT, PRINT TABLE WITH COLUMNS:  PROTEIN ID/PFAM/COG/EVAL
-#Species, Contig, Accession, Start-Stop (BP), Annotation, Cluster ID, Best hit ID, Best hit score
+import write_networks
+write_networks.write_networks(data_box, g_output_dir)
