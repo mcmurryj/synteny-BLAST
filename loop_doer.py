@@ -15,7 +15,9 @@ def getIDs (blastoutputfile):
     print("Parsed initial BLAST results!")
 
 def do_loops(ID_list, blastdb, feature_radius, secondary_BLAST_seq_file):
-    ###PHASE IC:  GET THE GENOME CHUNKS  (or at least the proteins) AND STORE IN FASTA FILES###
+    """This function crawls through your faa database, keeping a rolling window of protein seqs as it goes.
+    When you arrive at a protein of interest, it writes the rolling window to another faa db.
+    There are known minor bugs w/r/t the edges of contigs.  Also room for speed improvements."""
     ###Format of input custom FAA DB:  >[gb_file_name] [Organism name] [Protein accession] \n protein sequence
     protein_window = deque(maxlen= feature_radius*2 +1)
     delim2         = "&"
@@ -34,7 +36,7 @@ def do_loops(ID_list, blastdb, feature_radius, secondary_BLAST_seq_file):
     		for phit in protein_window:
     			species, contig, protID, annot, startstop = phit.description.split("|")
     			if contig != the_right_contig:
-    				pass	#originally did remove but deque mutation error
+    				pass	                           #originally did remove but deque mutation error
     			else:
     				secondaryBLASThandle = open(secondary_BLAST_seq_file, "a")  #just call this before starting the loops?S
     				ungodly              = phit
