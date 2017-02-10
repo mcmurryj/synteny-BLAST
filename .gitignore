@@ -42,6 +42,12 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+<<<<<<< HEAD
 #Jon stuff
 __pycache*
 barbarian-parse.py
+=======
+#stuff I'm not sure is a good idea:
+barbarian-parse.py
+__pycache*
+>>>>>>> ae02f17b845375a777a12359230557d0f6304f7e
