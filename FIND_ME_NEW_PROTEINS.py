@@ -1,16 +1,12 @@
 #!/usr/bin/python
 ###PHASE -1 : IMPORT LIBRARIES###
-from sys import argv
 import subprocess
 from Bio.Blast.Applications import NcbiblastpCommandline
 import os
-import shutil
-import glob
-import operator
-import get_parms()
+import get_parms
 
 ###INPUT USER INPUT STUFF####https://docs.python.org/2/howto/argparse.html#id1
-var_dict           = get_parms
+var_dict           = get_parms.get_parms()
 query_fa           = var_dict["query_fa"]
 output_dir         = os.path.abspath(var_dict["output_dir"])
 query_eval         = var_dict["query_eval"]				#cutoff evalue for the initial BLAST search
@@ -21,9 +17,9 @@ blastdb            = var_dict["blastdb"]					#use nr as the db for initial blast
 ###MAKE FOLDERS##
 from make_folders import make_folders
 make_folders(output_dir)
-blastoutputdir    = path.abspath(output_dir + "/initial_BLAST_data")
-make_folders(blastoutputdir)
-blastoutputfile = path.abspath(blastoutputdir + "/initial_blast_output.XML")
+blastoutputdir    = os.path.abspath(output_dir + "/initial_BLAST_data")
+os.makedirs(blastoutputdir)
+blastoutputfile   = os.path.abspath(blastoutputdir + "/initial_blast_output.XML")
 
 ###PHASE IA: BLAST QUERY SEQUENCE AGAINST DATABASE###
 cline = NcbiblastpCommandline(query  = query_fa,
@@ -36,7 +32,7 @@ print("Completed initial BLAST search")
 
 ###make output folder for BLAST2
 secondary_BLAST_seq_dir = output_dir + "/BLAST2_data"
-make_folders(secondary_BLAST_seq_dir)
+os.makedirs(secondary_BLAST_seq_dir)
 secondary_BLAST_seq_file = os.path.abspath(secondary_BLAST_seq_dir + "/secondary_BLAST_seqs.faa")
 print("Made dir " + secondary_BLAST_seq_dir + " to hold file " + secondary_BLAST_seq_file)
 
@@ -65,57 +61,14 @@ print("Done running secondary BLAST search!!!")
 
 ###Phase 1E:PARSE BLAST OUTPUT; STORE BITSCORES IN data_box[initialhitID][clustermemberID][homologueID] = bitscore
 ###AM HAVING PROBLEMS STORING DATA IN DICT WITHOUT OVERWRITING PREVIOUS ENTRIES
-cluster_ID, cluster_member_ID, homologue_ID = "", "", ""
-result_handle = open(outputfile2ndBLAST, "r")
-second_BLAST_rec = NCBIXML.parse(result_handle)
-for blastrecord in second_BLAST_rec:
-	cluster_ID        = blastrecord.query.split(delim2)[0]
-	cluster_member_ID = blastrecord.query.split(delim2)[1]
-	if not cluster_ID in data_box.keys():
-		data_box[cluster_ID]  = {}
-	for ali in blastrecord.alignments:
-		homologue_ID        = ali.hit_def.split(delim2)[1]
-		homologue_parent_ID = ali.hit_def.split(delim2)[0]
-		hitscore            = ali.hsps[0].score
-		if not cluster_member_ID in data_box[cluster_ID].keys():
-			data_box[cluster_ID][cluster_member_ID] = {}
-		data_box[cluster_ID][cluster_member_ID][homologue_ID] = {"bitscore" : hitscore,
-		                                                         "homologue_parent" : homologue_parent_ID}
-print("Done writing data to dictionary!!!")
+import parse_BLAST2
+data_box = parse_BLAST2.parse(outputfile2ndBLAST)
 
 ###PHASE IIA:  PRINT TABLE WITH DATA
-delim              = "|"
-header             = ["cluster member ID", "cluster member annotation", "cluster member startstop",
-"homologue organism", "homologue contig", "homologue proteinID", "homologue annot", "homologue startstop", "BLAST bitscore"]
-cluster_ID         = ""
-cluster_member_ID  = ""
-homologue_ID       = ""
-
-#Make the directory
 tab_output_dir = os.path.abspath(output_dir + "/table_output")
 os.makedirs(tab_output_dir)
-
-#iterate thru all the info and print stuff out
-for cluster_ID in data_box.keys():
-	#get data chunks from the titles of the fasta sequences
-	data0         = cluster_ID.split(delim)
-	WP_no         = data0[2]				#third element is the WP_number
-	org_cont      = data0[0:2]				#first 2 elements are species and contig
-	tabout_handle = open(os.path.abspath(tab_output_dir + "/"+ WP_no + ".tsv"), "a")
-	tabout_handle.write('\t'.join(map(str, org_cont)) + "\n")		#print species and contig at the top; these are invariant
-	tabout_handle.write('\t'.join(map(str, header  )) + "\n")		#print the header info
-	for cluster_member_ID in data_box[cluster_ID].keys():
-		data1 = cluster_member_ID.split(delim)
-		for homologue_ID in data_box[cluster_ID][cluster_member_ID].keys():
-			if cluster_member_ID != homologue_ID:       #if it is not self-identity
-				data2 = homologue_ID.split(delim)
-				score = [data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"]]
-				values = data1[2:] + data2 + score
-				tabout_handle.write('\t'.join(map(str, values))+"\n")
-			else :                                       #less interesting-where a protein is related to itself.
-				score = [data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"]]
-				values = data1[2:] + ["NA"]*5 + score
-				tabout_handle.write('\t'.join(map(str, values))+"\n")
+import print_tables
+print_tables.print_tables(data_box, tab_output_dir)
 
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
 import networkx as nx

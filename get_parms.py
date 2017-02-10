@@ -7,7 +7,7 @@ def get_parms():
     parser.add_argument("database", help = "your input BLAST database")
     parser.add_argument("output", help = "the name of the directory where you wish to store output")
     args = parser.parse_args()
-    return (
+    return ({
     "query_fa"           : args.input,
     "output_dir"         : args.output,
     "query_eval"         : 1E-30,				#cutoff evalue for the initial BLAST search
@@ -15,5 +15,5 @@ def get_parms():
     "max_no_seqs"        : 200,				#maximum number of hits to return in the initial search
     "handshake_eval"	 : 1e-20,			#cutoff evalue for the _blast_seq blast searches
     "blastdb"            : args.database,					#use nr as the db for initial blast search by default
-    )
+    })
     print("Done setting inital variables.  Input sequence from: " + query_fa + "; Output goes in " + output_dir)
