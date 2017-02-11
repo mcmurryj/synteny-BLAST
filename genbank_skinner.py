@@ -2,10 +2,13 @@
 ###Genbank skinner
 from glob import glob
 from Bio import SeqIO
+from sys import argv
+from os.path import abspath
 #import timeit
 
 delim = "|"
-gb_list = glob("*.gbff")
+dir = abspath(sys.argv[1])
+gb_list = glob(dir + "*.gbff")
 #gb_list =["GCF_000242715.1_ASM24271v2_genomic.gbff"]
 #start_time = timeit.default_timer()
 for gbfile in gb_list:

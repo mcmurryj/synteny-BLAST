@@ -6,7 +6,7 @@ def print_tables(data_box, tab_output_dir):
 
 	header = ["cluster member ID", "cluster member annotation", "cluster member startstop",
 		      "homologue organism", "homologue contig", "homologue proteinID", "homologue annot",
-			  "homologue startstop", "BLAST bitscore"]
+			  "homologue startstop", "BLAST bitscore", "CDD domains"]
 	delim  = "|"
 
 	for cluster_ID in data_box.keys():

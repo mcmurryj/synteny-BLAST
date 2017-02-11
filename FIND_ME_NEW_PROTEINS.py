@@ -61,7 +61,6 @@ print("Done running secondary BLAST search!!!")
 
 ###Phase 1E:PARSE BLAST OUTPUT; STORE BITSCORES IN data_box[initialhitID][clustermemberID][homologueID] = bitscore
 ###AM HAVING PROBLEMS STORING DATA IN DICT WITHOUT OVERWRITING PREVIOUS ENTRIES
-<<<<<<< HEAD
 cluster_ID, cluster_member_ID, homologue_ID = "", "", ""
 result_handle = open(outputfile2ndBLAST, "r")
 second_BLAST_rec = NCBIXML.parse(result_handle)
