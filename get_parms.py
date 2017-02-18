@@ -13,7 +13,7 @@ def get_parms():
                        default = 1E-30,
                         help = "The e value cutoff to use for the initial blast search")
     parser.add_argument("--feature_radius",
-                         default = 5
+                         default = 5,
                          help = "How wide a window around your initial hit do you want to consider, in coding sequences?")
     parser.add_argument("--handshake_eval",
                         default = 1E-20,
