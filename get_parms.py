@@ -29,4 +29,3 @@ def get_parms():
     "handshake_eval"	 : 1e-20,			#cutoff evalue for the _blast_seq blast searches
     "blastdb"            : args.database,
     })
-    print("Done setting inital variables.  Input sequence from: " + query_fa + "; Output goes in " + output_dir)
