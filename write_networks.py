@@ -11,7 +11,10 @@ def write_networks(data_box, g_output_dir) :
 		for cluster_member_ID in data_box[cluster_ID].keys():
 			for homologue_ID in data_box[cluster_ID][cluster_member_ID].keys():
 				#Important-score must be a float, otherwise adding gets funky
-				score               = float(data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"])
+				if cluster_member_ID == cluster_ID :
+					score           = 0
+				else :
+					score           = float(data_box[cluster_ID][cluster_member_ID][homologue_ID]["bitscore"])
 				homologue_parent_ID = data_box[cluster_ID][cluster_member_ID][homologue_ID]["homologue_parent"]
 				IDtup               = tuple(sorted([cluster_ID, homologue_parent_ID]))
 				IDtup2              = tuple(sorted([cluster_member_ID, homologue_ID]))
