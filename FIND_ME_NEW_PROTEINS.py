@@ -13,6 +13,7 @@ query_eval         = var_dict["query_eval"]				#cutoff evalue for the initial BL
 feature_radius     = var_dict["feature_radius"]			#how many proteins on either side to take for subsequent analysis?
 handshake_eval	   = var_dict["handshake_eval"]			#cutoff evalue for the _blast_seq blast searches
 blastdb            = var_dict["blastdb"]					#use nr as the db for initial blast search by default
+rps_db             = var_dict["rps_db"]
 
 ###MAKE FOLDERS##
 os.makedirs(output_dir)
@@ -67,20 +68,27 @@ data_box = parse_BLAST2.parse(outputfile2ndBLAST)
 from Bio.Blast.Applications import NcbirpsblastCommandline as rpsBLAST
 #If I didn't set a db for RPS-blast, not worth trying.
 if rps_db != False :
+    outputfilerps = os.path.abspath(secondary_BLAST_seq_dir + "/rpsBLAST_output.XML")
     rpscmd = rpsBLAST(query  = secondary_BLAST_seq_file,
-                      db     = XXXXX,
-                      evalue = query_eval,
-                      outfmt = 5)
-    rpsoutput, rpserr        = rpscmd()
-
+                      db     = rps_db,
+                      evalue = 1E-10,
+                      outfmt = 5,
+                      out    = outputfilerps
+                      )
+    print("Running rps-BLAST")
+    rpscmd()
+    print("Done with RPS-blast!!!")
     from rpsBLAST_tools import add_annot
-    data_box = add_annot(data_box, rpsoutput)
+    annot_dict = add_annot(data_box, outputfilerps)
+    print("Done adding domain annotations!!!")
+else :
+    annot_dict = {}
 
 ###PHASE IIA:  PRINT TABLE WITH DATA
 tab_output_dir = os.path.abspath(output_dir + "/table_output")
 os.makedirs(tab_output_dir)
 import print_tables
-print_tables.print_tables(data_box, tab_output_dir)
+print_tables.print_tables(data_box, tab_output_dir, annot_dict = annot_dict)
 
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
 g_output_dir = os.path.abspath(output_dir + "/graph_output")
