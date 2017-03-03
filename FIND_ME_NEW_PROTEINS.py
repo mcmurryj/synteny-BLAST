@@ -15,8 +15,7 @@ handshake_eval	   = var_dict["handshake_eval"]			#cutoff evalue for the _blast_s
 blastdb            = var_dict["blastdb"]					#use nr as the db for initial blast search by default
 
 ###MAKE FOLDERS##
-from make_folders import make_folders
-make_folders(output_dir)
+os.makedirs(output_dir)
 blastoutputdir    = os.path.abspath(output_dir + "/initial_BLAST_data")
 os.makedirs(blastoutputdir)
 blastoutputfile   = os.path.abspath(blastoutputdir + "/initial_blast_output.XML")
@@ -63,6 +62,19 @@ print("Done running secondary BLAST search!!!")
 ###AM HAVING PROBLEMS STORING DATA IN DICT WITHOUT OVERWRITING PREVIOUS ENTRIES
 import parse_BLAST2
 data_box = parse_BLAST2.parse(outputfile2ndBLAST)
+
+###PHASE IF: run rps BLAST and parse
+from Bio.Blast.Applications import NcbirpsblastCommandline as rpsBLAST
+#If I didn't set a db for RPS-blast, not worth trying.
+if rps_db != False :
+    rpscmd = rpsBLAST(query  = secondary_BLAST_seq_file,
+                      db     = XXXXX,
+                      evalue = query_eval,
+                      outfmt = 5)
+    rpsoutput, rpserr        = rpscmd()
+
+    from rpsBLAST_tools import add_annot
+    data_box = add_annot(data_box, rpsoutput)
 
 ###PHASE IIA:  PRINT TABLE WITH DATA
 tab_output_dir = os.path.abspath(output_dir + "/table_output")
