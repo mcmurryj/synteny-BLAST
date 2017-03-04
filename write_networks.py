@@ -8,7 +8,8 @@ def write_networks(data_box, g_output_dir) :
 		cluNet.add_node(cluster_ID)
 
 	for cluster_ID in data_box.keys():
-		for cluster_member_ID in data_box[cluster_ID].keys():
+		sorted_cmemb = sorted(data_box[cluster_ID].keys())
+		for cluster_member_ID in sorted_cmemb:
 			for homologue_ID in data_box[cluster_ID][cluster_member_ID].keys():
 				#Important-score must be a float, otherwise adding gets funky
 				if cluster_member_ID == cluster_ID :
@@ -33,9 +34,14 @@ def write_networks(data_box, g_output_dir) :
 		if protNet.has_edge(n, n):
 			protNet.remove_edge(n,n)
 
+    #remove self edges.
 	for n in cluNet.nodes():
 		if cluNet.has_edge(n, n):
 			cluNet.remove_edge(n,n)
+	#remove weightless edges.
+	for e1, e2 in cluNet.edges():
+		if cluNet[e1][e2]["weight"] < 1:
+			cluNet.remove_edge(e1,e2)
 
 	nx.write_gml(cluNet,  os.path.abspath(g_output_dir + "/"+ "graph_o_clusters.gml"))
 	nx.write_gml(protNet, os.path.abspath(g_output_dir + "/"+ "graph_o_proteins.gml"))

@@ -79,16 +79,18 @@ if rps_db != False :
     rpscmd()
     print("Done with RPS-blast!!!")
     from rpsBLAST_tools import add_annot
-    annot_dict = add_annot(data_box, outputfilerps)
+    annot_dict, annot_def_dict = add_annot(data_box, outputfilerps)
     print("Done adding domain annotations!!!")
 else :
-    annot_dict = {}
+    annot_dict, annot_def_dict = {}, {}
 
 ###PHASE IIA:  PRINT TABLE WITH DATA
 tab_output_dir = os.path.abspath(output_dir + "/table_output")
 os.makedirs(tab_output_dir)
 import print_tables
-print_tables.print_tables(data_box, tab_output_dir, annot_dict = annot_dict)
+print_tables.print_tables(data_box, tab_output_dir,
+                          annot_dict = annot_dict,
+                          annot_def_dict = annot_def_dict)
 
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
 g_output_dir = os.path.abspath(output_dir + "/graph_output")
