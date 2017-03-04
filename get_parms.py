@@ -21,6 +21,9 @@ def get_parms():
     parser.add_argument("--rps_db",
                         default = False,
                         help = "Database of domains to use for RPS-blast, null by default")
+    parser.add_argument("--random",
+                        default = False,
+                        help = "Accept probability for random sampling of 1st BLAST results.")
 
     args = parser.parse_args()
     return ({
@@ -31,5 +34,6 @@ def get_parms():
     "max_no_seqs"        : 200,				#maximum number of hits to return in the initial search
     "handshake_eval"	 : 1e-20,			#cutoff evalue for the _blast_seq blast searches
     "blastdb"            : args.database,
-    "rps_db"             : args.rps_db
+    "rps_db"             : args.rps_db,
+    "random"             : args.random
     })

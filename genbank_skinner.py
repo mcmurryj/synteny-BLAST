@@ -3,10 +3,12 @@
 from glob import glob
 from Bio import SeqIO
 import re
+from sys import argv
 #import timeit
 
 delim = "|"
-gb_list = glob("*.gbff")
+# gb_list = glob("*.gbff")
+gb_list = argv[1:]
 #start_time = timeit.default_timer()
 for gbfile in gb_list:
 	gb = SeqIO.parse(gbfile, "genbank")					###parse needed for multirecord
