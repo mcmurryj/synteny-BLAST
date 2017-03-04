@@ -62,7 +62,9 @@ print("Done running secondary BLAST search!!!")
 ###Phase 1E:PARSE BLAST OUTPUT; STORE BITSCORES IN data_box[initialhitID][clustermemberID][homologueID] = bitscore
 ###AM HAVING PROBLEMS STORING DATA IN DICT WITHOUT OVERWRITING PREVIOUS ENTRIES
 import parse_BLAST2
+print("Get ready to parse BLAST2!!!")
 data_box = parse_BLAST2.parse(outputfile2ndBLAST)
+print("Done parsing BLAST2!!!")
 
 ###PHASE IF: run rps BLAST and parse
 from Bio.Blast.Applications import NcbirpsblastCommandline as rpsBLAST
