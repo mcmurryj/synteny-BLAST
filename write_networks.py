@@ -1,11 +1,17 @@
 import networkx as nx
 import os
-def write_networks(data_box, g_output_dir) :
+def write_networks(data_box, g_output_dir, annot_dict = False) :
 	cluNet = nx.Graph()
 	protNet = nx.Graph()
 
 	for cluster_ID in data_box.keys():
-		cluNet.add_node(cluster_ID)
+		if annot_dict != False :
+			pfam_domains = []
+			for cluster_member in data_box[cluster_ID].keys():
+			    pfam_domains.append(annot_def_dict[cluster_member_ID])
+			cluNet.add_node(cluster_ID, pfam_domains = pfam_domains)
+		else:
+			cluNet.add_node(cluster_ID)
 
 	for cluster_ID in data_box.keys():
 		sorted_cmemb = sorted(data_box[cluster_ID].keys())

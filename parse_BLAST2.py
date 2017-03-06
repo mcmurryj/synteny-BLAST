@@ -10,7 +10,7 @@ def parse(outputfile2ndBLAST) :
     for blastrecord in second_BLAST_rec:
     	cluster_ID        = blastrecord.query.split(delim2)[0]
     	cluster_member_ID = blastrecord.query.split(delim2)[1]
-    	if not cluster_ID in data_box.keys():
+    	if not cluster_ID in data_box.keys():                      #swap for performance: if not cluster_ID in data_box :
     		data_box[cluster_ID]  = {}
     	for ali in blastrecord.alignments:
     		homologue_ID        = ali.hit_def.split(delim2)[1]
