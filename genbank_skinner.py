@@ -6,6 +6,7 @@ from glob import glob
 from Bio import SeqIO
 import re
 import argparse
+import sys
 
 #Get the dir with the gb files
 parser = argparse.ArgumentParser()
@@ -18,6 +19,7 @@ delim = "|"
 spec_counts = {}
 gb_list = glob(args.gb_dir + "*.gb*")
 
+print("Now we embark upon the loops.", file = sys.stderr)
 #Loops loops loops
 for gbfile in gb_list:
     gb    = SeqIO.parse(gbfile, "genbank")					###parse needed for multirecord
@@ -56,6 +58,7 @@ for gbfile in gb_list:
                 print((feat.extract(rec.seq).translate()))                        #use [:-1]to get rid of the * for stop codon, don't know if blastdb will like that
     #Increment the species counter.
     spec_counts[spec]    += 1
+    print("Done with species " + spec + " from file " + gbfile, file=sys.stderr)
     #print(spec)
     #print(spec_counts[spec])
 
