@@ -12,10 +12,11 @@ def print_tables(data_box, tab_output_dir, annot_dict = {}, annot_def_dict = {})
 	for cluster_ID in data_box.keys():
 		#get data chunks from the titles of the fasta sequences
 		data0         = cluster_ID.split(delim)
+		species       = data0[0].replace(" ", "_")
 		WP_no         = data0[2]				#third element is the WP_number
 		org_cont      = data0[0:2]				#first and second elements are the species, contig
 		#Open a file handle and write header information
-		tabout_handle = open(os.path.abspath(tab_output_dir + "/"+ WP_no + ".tsv"), "a")
+		tabout_handle = open(os.path.abspath(tab_output_dir + "/" + species + "-" + WP_no + ".tsv"), "a")
 		tabout_handle.write('\t'.join(map(str, org_cont)) + "\n")		#print species and contig at the top; these are invariant
 		tabout_handle.write('\t'.join(map(str, header  )) + "\n")		#print the header info
 		#Loop thru the dict and print out the good stuff.

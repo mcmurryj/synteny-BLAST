@@ -30,7 +30,7 @@ for gbfile in gb_list:
         if first == True:
             first = False
             #Retrieve organism name; sanitize illegal_chars; fill spaces with _
-            organism   = re.sub('[$%^&*#|]', "", rec.annotations['organism'].replace(" ", "_"))
+            organism   = re.sub('[$%^&*#|\[\]]', "", rec.annotations['organism'].replace(" ", "_"))
             #Species is first 2x chunks of the organism name
             spec = "_".join(organism.split("_")[:2])
             #If we've never seen it before throw it in a dict.

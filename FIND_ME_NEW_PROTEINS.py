@@ -86,6 +86,11 @@ if rps_db != False :
 else :
     annot_dict, annot_def_dict = {}, {}
 
+###Write data_box to pickle
+import pickle
+pickfile = os.path.abspath(output_dir + "/data_box_pickle")
+pickle.dump(data_box, open(pickfile, "wb"))
+
 ###PHASE IIA:  PRINT TABLE WITH DATA
 tab_output_dir = os.path.abspath(output_dir + "/table_output")
 os.makedirs(tab_output_dir)
