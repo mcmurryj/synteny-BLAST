@@ -9,7 +9,7 @@ def print_tables(data_box, tab_output_dir, annot_dict = {}, annot_def_dict = {})
 			  "homologue startstop", "BLAST bitscore", "CDD domains", "Domain definitions"]
 	delim  = "|"
 
-	for cluster_ID in data_box.keys():
+	for cluster_ID in sorted(data_box.keys()):
 		#get data chunks from the titles of the fasta sequences
 		data0         = cluster_ID.split(delim)
 		species       = data0[0].replace(" ", "_")

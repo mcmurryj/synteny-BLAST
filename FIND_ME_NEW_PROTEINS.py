@@ -87,18 +87,21 @@ else :
     annot_dict, annot_def_dict = {}, {}
 
 ###Write data_box to pickle
-import pickle
-pickfile = os.path.abspath(output_dir + "/data_box_pickle")
-pickle.dump(data_box, open(pickfile, "wb"))
+#import pickle
+#pickfile = os.path.abspath(output_dir + "/data_box_pickle")
+#pickle.dump(data_box, open(pickfile, "wb"))
 
 ###PHASE IIA:  PRINT TABLE WITH DATA
 tab_output_dir = os.path.abspath(output_dir + "/table_output")
 os.makedirs(tab_output_dir)
-import print_tables
-print_tables.print_tables(data_box, tab_output_dir,
-                          annot_dict = annot_dict,
-                          annot_def_dict = annot_def_dict)
-
+import print_tables as pt
+print("Writing tabular output...")
+pt.print_tables(data_box, tab_output_dir,
+                 annot_dict     = annot_dict,
+                 annot_def_dict = annot_def_dict)
+import print_summary_tables as pst
+pst.summarize(tab_output_dir)
+print("Done writing tabular output!!!")
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
 g_output_dir = os.path.abspath(output_dir + "/graph_output")
 os.makedirs(g_output_dir)
