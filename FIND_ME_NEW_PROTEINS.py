@@ -14,6 +14,7 @@ feature_radius     = var_dict["feature_radius"]			#how many proteins on either s
 handshake_eval	   = var_dict["handshake_eval"]			#cutoff evalue for the _blast_seq blast searches
 blastdb            = var_dict["blastdb"]					#use nr as the db for initial blast search by default
 rps_db             = var_dict["rps_db"]
+mts                = var_dict["max_target_seqs"]
 
 ###MAKE FOLDERS##
 os.makedirs(output_dir)
@@ -22,13 +23,16 @@ os.makedirs(blastoutputdir)
 blastoutputfile   = os.path.abspath(blastoutputdir + "/initial_blast_output.XML")
 
 ###PHASE IA: BLAST QUERY SEQUENCE AGAINST DATABASE###
-cline = NcbiblastpCommandline(query  = query_fa,
-                              db     = blastdb,
-							  evalue = query_eval,
-							  outfmt = 5,
-							  out    = blastoutputfile)
+print("Running initial BLAST search...")
+cline = NcbiblastpCommandline(query           = query_fa,
+                              db              = blastdb,
+							  evalue          = query_eval,
+							  outfmt          = 5,
+							  out             = blastoutputfile,
+                              max_target_seqs = mts
+                              )
 cline()														#to actually run the thing
-print("Completed initial BLAST search")
+print("Completed initial BLAST search!!!")
 
 ###make output folder for BLAST2
 secondary_BLAST_seq_dir = output_dir + "/BLAST2_data"
@@ -105,5 +109,7 @@ print("Done writing tabular output!!!")
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
 g_output_dir = os.path.abspath(output_dir + "/graph_output")
 os.makedirs(g_output_dir)
-import write_networks
-write_networks.write_networks(data_box, g_output_dir)
+import write_networks_dict
+print("Writing stuff to networks....")
+write_networks_dict.write_networks(data_box, g_output_dir)
+print("All done!!!")

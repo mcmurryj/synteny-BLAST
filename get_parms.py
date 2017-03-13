@@ -24,6 +24,9 @@ def get_parms():
     parser.add_argument("--random",
                         default = False,
                         help = "Accept probability for random sampling of 1st BLAST results.")
+    parser.add_argument("--max_target_seqs",
+                        default = 200,
+                        help = "max_target_seqs param for blast.")
 
     args = parser.parse_args()
     return ({
@@ -35,5 +38,6 @@ def get_parms():
     "handshake_eval"	 : 1e-20,			#cutoff evalue for the _blast_seq blast searches
     "blastdb"            : args.database,
     "rps_db"             : args.rps_db,
-    "random"             : args.random
+    "random"             : args.random,
+    "max_target_seqs"    : args.max_target_seqs
     })
