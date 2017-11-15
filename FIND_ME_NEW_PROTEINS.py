@@ -104,7 +104,8 @@ pt.print_tables(data_box, tab_output_dir,
                  annot_dict     = annot_dict,
                  annot_def_dict = annot_def_dict)
 import print_summary_tables as pst
-pst.summarize(tab_output_dir)
+pst.summarize(tab_output_dir)           #Print more informative summary data
+pst.contingencyTable(tab_output_dir)    #Read the summary data and print contingency tables
 print("Done writing tabular output!!!")
 ###PHASE IIB: MAKE NETWORK AND STORE IN XGMML
 g_output_dir = os.path.abspath(output_dir + "/graph_output")
