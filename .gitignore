@@ -45,3 +45,6 @@ Temporary Items
 #stuff I'm not sure is a good idea:
 barbarian-parse.py
 __pycache*
+
+#Compiled python files
+*.pyc
