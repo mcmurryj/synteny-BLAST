@@ -27,7 +27,7 @@ def do_loops(ID_list, blastdb, feature_radius, secondary_BLAST_seq_file):
     for p in protein_record:
         protein_window.append(p)
         if len(protein_window) < (feature_radius + 1):  #This BS is to avoid corner case errors when you get a hit at beginning of a contig.
-            pID = protein_window[-1]
+            pID = protein_window[-1].description        #Added the ".description"; don't know how this was running without error before as it would return a seqrecord.
         else:
             pID = protein_window[feature_radius].description
         if pID in ID_list:								#won't find clusters in the last radius unit of the faa file.
