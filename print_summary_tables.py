@@ -20,7 +20,7 @@ def summarize(tab_output_dir) :
                            "No._of_same_pfam_domain" : cdd_counts,
                            "Pfam_domain_def."        : cdd_des}
             tabsum      = pd.DataFrame(adict).transpose()
-            tabsum.sort_values('No._of_homologues ', ascending = False, inplace = True)
+            tabsum.sort_values('No._of_homologues', ascending = False, inplace = True)      #Fixed keyerror with extra space in 'No._of_homologues '
             tabsum.index.rename("NCBI protein ID", inplace = True)
             tabsum.to_csv(abspath(f[:-4] + "synop.tsv"), sep = "\t")
 
