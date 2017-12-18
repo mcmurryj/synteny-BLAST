@@ -2,3 +2,4 @@ pip install networkxgmml
 pip install networkx
 pip install ncbi-genome-download
 pip install biopython
+pip install ReportLab
