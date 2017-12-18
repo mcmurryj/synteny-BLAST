@@ -48,3 +48,6 @@ __pycache*
 
 #Compiled python files
 *.pyc
+
+#Remove, eventually.
+README.md
