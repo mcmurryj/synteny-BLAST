@@ -1,6 +1,11 @@
 #!/usr/bin/python
 from Bio.Blast import NCBIXML
 def add_annot(data_box, output) :
+    """Parse output of RPS BLAST.
+       Save the results in a dictionary.
+       Output:
+       annot_dict is keyed on cluster member ID, values are CDD or Pfam IDs.
+       annot_def_dict is keyed on cluster member ID, values are annotations."""
     annot_dict     = {}
     annot_def_dict = {}
     rps_handle                    = open(output, "r")
