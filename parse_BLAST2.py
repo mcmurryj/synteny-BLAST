@@ -1,7 +1,11 @@
 #!/usr/bin/python
 from Bio.Blast import NCBIXML
 
-def parse(outputfile2ndBLAST) :
+def parse(outputfile2ndBLAST):
+    """Accept BLAST XML output from an all-vs-all BLAST search.
+       Return a dict of dict of dict of dicts with structure:
+       {cluster_ID : {cluster_member_ID : {homologue_ID : {info about hits}}}}
+       homologue_parent_ID is the cluster_member_ID of the parent."""
     delim2                                      = "&"
     cluster_ID, cluster_member_ID, homologue_ID = "", "", ""
     result_handle = open(outputfile2ndBLAST, "r")
