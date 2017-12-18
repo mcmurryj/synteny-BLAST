@@ -33,7 +33,7 @@ def getClustSS(clusterMembers):
     output = (cstart, cstop, cstop-cstart)
     return output
 
-def getMaxSpan(sortedClusters):
+def getMaxSpan(sortedClusters, data_box):
     """Function to get the maximum span from a list of
        cluster_IDs, in terms of base pair length of cluster."""
     maxSpan = 0
@@ -87,7 +87,7 @@ def printClusterPics(cluNet, data_box, annot_def_dict, output_dir, ncutoff=8):
         #Return the top most related clusters.
         sortedClusters = getTopClusters(cluNet, node)[0]
         #the largest nucleotide span in all the clusters under consideration.
-        maxSpan = getMaxSpan(sortedClusters)
+        maxSpan = getMaxSpan(sortedClusters, data_box)
         #Get info about pfam domains in all the clusters under consideration
         id_list = makeIDList(sortedClusters, data_box)
         domainCounts = getPfamCounts(annot_def_dict, id_list)
