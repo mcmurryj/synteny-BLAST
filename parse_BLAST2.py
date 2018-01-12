@@ -7,7 +7,7 @@ def parse(outputfile2ndBLAST):
        {cluster_ID : {cluster_member_ID : {homologue_ID : {info about hits}}}}
        homologue_parent_ID is the cluster_member_ID of the parent."""
     delim2                                      = "&"
-    cluster_ID, cluster_member_ID, homologue_ID = "", "", ""
+    cluster_ID, cluster_member_ID, homologue_ID = "", "", "" #delete this line?
     result_handle = open(outputfile2ndBLAST, "r")
     second_BLAST_rec = NCBIXML.parse(result_handle)
     data_box = {}

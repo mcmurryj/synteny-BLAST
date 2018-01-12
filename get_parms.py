@@ -27,7 +27,7 @@ def get_parms():
     parser.add_argument("--max_target_seqs",
                         default = 200,
                         help = "max_target_seqs param for blast.")
-
+    #Should change it to just return args, this dictionary is stupid
     args = parser.parse_args()
     return ({
     "query_fa"           : args.input,
